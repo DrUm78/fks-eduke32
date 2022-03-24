@@ -1,2 +1,9 @@
 ﻿polymer/eduke32/.vs
 polymer/eduke32/eduke32.log
+polymer/eduke32/CMakeFiles
+polymer/eduke32/CMakeCache.txt
+polymer/eduke32/cmake_install.cmake
+polymer/eduke32/*.opk
+polymer/eduke32/eduke32
+*.o
+*.a

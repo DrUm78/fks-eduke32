@@ -62,7 +62,7 @@ OBJ?=obj.gnu
 SRC=src
 RSRC=rsrc
 INC=include
-SDL_INC=/opt/FunKey-sdk-2.3.0/arm-funkey-linux-musleabihf/sysroot/usr/include/
+SDL_INC=/opt/FunKey-sdk/arm-funkey-linux-musleabihf/sysroot/usr/include/
 
 # ENETROOT=$(SRC)/enet
 
@@ -95,7 +95,7 @@ ifneq (0,$(DEBUGANYWAY))
     debug+=-ggdb
 endif
 
-CHAINPREFIX ?= /opt/FunKey-sdk-2.3.0
+CHAINPREFIX ?= /opt/FunKey-sdk
 CROSS_COMPILE ?= $(CHAINPREFIX)/bin/arm-funkey-linux-musleabihf-
 
 CC    ?= $(CROSS_COMPILE)gcc

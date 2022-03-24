@@ -71,7 +71,7 @@ JAUDIOLIB=libjfaudiolib.a
 ENETDIR=$(SRC)/enet
 ENETLIB=libenet.a
 
-CHAINPREFIX ?= /opt/FunKey-sdk-2.3.0
+CHAINPREFIX ?= /opt/FunKey-sdk
 CROSS_COMPILE ?= $(CHAINPREFIX)/bin/arm-funkey-linux-musleabihf-
 
 CC    ?= $(CROSS_COMPILE)gcc
@@ -86,8 +86,8 @@ ARCH=-fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-poi
 #RC=windres
 #STRIP=strip
 
-SDLCONFIG=/opt/FunKey-sdk-2.3.0/arm-funkey-linux-musleabihf/sysroot/usr/bin/
-SDL_FRAMEWORK=/opt/FunKey-sdk-2.3.0/arm-funkey-linux-musleabihf/sysroot/usr/include/
+SDLCONFIG=/opt/FunKey-sdk/arm-funkey-linux-musleabihf/sysroot/usr/bin/
+SDL_FRAMEWORK=/opt/FunKey-sdk/arm-funkey-linux-musleabihf/sysroot/usr/include/
 
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -w \
     -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS -DFUNKEYS \

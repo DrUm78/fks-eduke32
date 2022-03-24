@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Duke 3D
+Comment=EDuke32 port for the FunKey S
+Exec=eduke32.sh %f
+Icon=duke3d
+Categories=games
+SelectorFilter=grp
