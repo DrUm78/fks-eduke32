@@ -2953,7 +2953,7 @@ void G_DisplayRest(int32_t smoothratio)
             i = 2;
             //        j = scale(2,ud.config.ScreenWidth,320);
         }
-        j = scale(2,ud.config.ScreenWidth,320);
+        j = screencropoffset;
 
         Bsprintf(tempbuf,"T:^15%d:%02d.%02d",
                  (g_player[myconnectindex].ps->player_par/(REALGAMETICSPERSEC*60)),

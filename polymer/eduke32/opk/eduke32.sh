@@ -5,13 +5,9 @@ if [ ! -e /usr/lib/libvorbis.so.0 ] || [ ! -e /usr/lib/libvorbisfile.so.3 ]; the
 	cp -f libvorbis.so.0 /usr/lib
 	cp -f libvorbisfile.so.3 /usr/lib
 	ro
-	./eduke32 &
-	pid record $!
-	wait $!
-	pid erase
-else
-	./eduke32 &
-	pid record $!
-	wait $!
-	pid erase
 fi
+# Launch EDuke32 and record pid for Instant Play
+./eduke32 &
+pid record $!
+wait $!
+pid erase

@@ -50,7 +50,7 @@ int32_t startwin_settitle(const char *s) { s=s; return 0; }
 // undefine to restrict windowed resolutions to conventional sizes
 #define ANY_WINDOWED_SIZE
 
-#define MAX_FPS 90
+#define MAX_FPS 50
 
 // fix for mousewheel
 #define MWHEELTICKS 10

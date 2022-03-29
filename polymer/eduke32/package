@@ -14,6 +14,6 @@ fi
 
 cp -f eduke32 ./opk
 rm -f *.opk
-mksquashfs opk/* eduke32_funkey-s.opk
+mksquashfs opk/* eduke32_v1.2.1_funkey-s.opk
 rm -rf obj/
 rm -f opk/eduke32
