@@ -33,7 +33,7 @@ int32_t g_demo_totalCnt;
 int32_t g_demo_soundToggle;
 int32_t g_demo_paused=0;
 int32_t g_demo_rewind=0;
-int32_t g_demo_showStats=1;
+int32_t g_demo_showStats=0;
 int32_t g_demo_recFilePtr;
 
 static int32_t demo_hasdiffs, demorec_diffs=1, demorec_difftics = 2*(TICRATE/TICSPERFRAME);
@@ -44,7 +44,7 @@ int32_t demorec_difftics_cvar = 2*(TICRATE/TICSPERFRAME);
 int32_t demorec_diffcompress_cvar=1;
 int32_t demorec_synccompress_cvar=1;
 int32_t demorec_seeds_cvar=1;
-int32_t demoplay_showsync=1;
+int32_t demoplay_showsync=0;
 
 static int32_t demo_synccompress=1, demorec_seeds=1, demo_hasseeds;
 
