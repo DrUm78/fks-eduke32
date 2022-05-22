@@ -169,7 +169,7 @@ void G_OpenDemoWrite(void)
             Bsprintf(d, "edemo%d.edm", demonum++);
             g_demo_filePtr = fopen(d, "rb");
             if (g_demo_filePtr == NULL) break;
-            Bfclose(g_demo_filePtr);
+            MAYBE_FCLOSE_AND_NULL(g_demo_filePtr);
         }
 
         if ((g_demo_filePtr = fopen(d,"wb")) == NULL) return;
@@ -180,7 +180,7 @@ void G_OpenDemoWrite(void)
         {
             Bstrcpy(ScriptQuotes[122], "FAILED STARTING DEMO RECORDING. SEE OSD FOR DETAILS.");
             P_DoQuote(122, g_player[myconnectindex].ps);
-            Bfclose(g_demo_filePtr), g_demo_filePtr=NULL;
+            MAYBE_FCLOSE_AND_NULL(g_demo_filePtr);
             ud.recstat = ud.m_recstat = 0;
             return;
         }
@@ -265,7 +265,7 @@ void G_CloseDemoWrite(void)
             fwrite(&g_demo_cnt, sizeof(g_demo_cnt), 1, g_demo_filePtr);
 
         ud.recstat = ud.m_recstat = 0;
-        fclose(g_demo_filePtr);
+        MAYBE_FCLOSE_AND_NULL(g_demo_filePtr);
 
         sv_freemem();
 

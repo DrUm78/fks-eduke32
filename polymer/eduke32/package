@@ -1,7 +1,5 @@
 #!/bin/bash
 
-mkdir obj/
-
 git fetch --all
 git merge upstream/master
 make veryclean
@@ -14,6 +12,5 @@ fi
 
 cp -f eduke32 ./opk
 rm -f *.opk
-mksquashfs opk/* eduke32_v1.2.1_funkey-s.opk
-rm -rf obj/
+mksquashfs opk/* eduke32_v1.3_funkey-s.opk
 rm -f opk/eduke32
