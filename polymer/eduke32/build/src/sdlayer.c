@@ -847,7 +847,7 @@ void getvalidmodes(void)
 }
 
     ADDMODE(320, 240, 8, 0);
-    ADDMODE(320, 240, 32, 0);
+    //ADDMODE(320, 240, 32, 0);
 
     qsort((void*)validmode, validmodecnt, sizeof(struct validmode_t), (int32_t(*)(const void*,const void*))sortmodes);
 

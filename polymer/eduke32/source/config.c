@@ -187,7 +187,7 @@ void CONFIG_SetDefaults(void)
     ud.config.ScreenWidth = 320;
     ud.config.ScreenHeight = 240;
     ud.config.ScreenMode = 0;
-	ud.config.ScreenScaleMode = 2;
+	ud.config.ScreenScaleMode = 0;
 #if defined(POLYMOST) && defined(USE_OPENGL)
     ud.config.ScreenBPP = 32;
 #else
