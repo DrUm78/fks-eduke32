@@ -738,8 +738,6 @@ int32_t inittimer(int32_t tickspersecond)
 //
 void uninittimer(void)
 {
-    if (!timerfreq) return;
-
     timerfreq=0;
 }
 
@@ -748,13 +746,10 @@ void uninittimer(void)
 //
 void sampletimer(void)
 {
-    Uint32 i;
-    int32_t n;
-
     if (!timerfreq) return;
 
-    i = SDL_GetTicks();
-    n = (int32_t)(i * timerticspersec / timerfreq) - timerlastsample;
+    int64_t i = SDL_GetTicks();
+    int32_t n = (int32_t)(i * timerticspersec / timerfreq) - timerlastsample;
     if (n>0)
     {
         totalclock += n;

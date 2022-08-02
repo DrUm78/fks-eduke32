@@ -6296,7 +6296,7 @@ PALONLY:
             if (actor[i].picnum == BLIMP && t->picnum == SCRAP1 && s->yvel >= 0)
                 t->picnum = s->yvel;
             else t->picnum += T1;
-            t->shade -= 6;
+            t->shade = -128+6 < t->shade ? t->shade-6 : -128;
 
             if (sector[sect].floorpal && sector[sect].floorpal < g_numRealPalettes && !A_CheckSpriteFlags(t->owner,SPRITE_NOPAL))
                 t->pal = sector[sect].floorpal;
@@ -10077,6 +10077,9 @@ CLEAN_DIRECTORY:
     //    getpackets();
 
 MAIN_LOOP_RESTART:
+    totalclock = 0;
+    ototalclock = 0;
+    lockclock = 0;
 
     G_GetCrosshairColor();
     G_SetCrosshairColor(CrosshairColors.r, CrosshairColors.g, CrosshairColors.b);
