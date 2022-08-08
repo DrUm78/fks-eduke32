@@ -8783,7 +8783,7 @@ static void G_CheckCommandLine(int32_t argc, const char **argv)
 static void G_DisplayLogo(void)
 {
     int32_t soundanm = 0;
-    int32_t logoflags=Gv_GetVarByLabel("LOGO_FLAGS",255, -1, -1);
+    int32_t logoflags=Gv_GetVarByLabel("LOGO_FLAGS",127, -1, -1);
 
     ready2send = 0;
 
