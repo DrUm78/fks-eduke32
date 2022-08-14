@@ -29,6 +29,7 @@
 ## include the common dirty stuff
 #include $(UHEXEN2_TOP)/scripts/makefile.inc
 
+EROOT=build
 include ../../$(EROOT)/Makefile.shared
 
 # compiler flags, customize as needed

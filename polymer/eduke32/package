@@ -13,4 +13,5 @@ fi
 cp -f eduke32 ./opk
 rm -f *.opk
 mksquashfs opk/* eduke32_v1.3_funkey-s.opk
+md5sum eduke32
 rm -f opk/eduke32

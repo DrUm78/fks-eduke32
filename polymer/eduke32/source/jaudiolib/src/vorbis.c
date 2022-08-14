@@ -352,6 +352,7 @@ int32_t MV_PlayLoopedVorbis
    
    status = ov_open_callbacks((void *) vd, &vd->vf, 0, 0, vorbis_callbacks);
    if (status < 0) {
+      free(vd);
       MV_Printf("MV_PlayLoopedVorbis: err %d\n", status);
       MV_SetErrorCode( MV_InvalidVorbisFile );
       return MV_Error;
