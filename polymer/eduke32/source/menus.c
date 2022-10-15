@@ -2979,7 +2979,7 @@ cheat_for_port_credits:
                     int32_t osdmode = OSD_GetTextMode();
                     if (x==io) osdmode = !osdmode;
                     modval(0,1,(int32_t *)&osdmode,1,probey==io);
-                    mgametextpal(d,yy, osdmode? "Basic" : "Sprites", MENUHIGHLIGHT(io), 0);
+                    mgametextpal(d,yy, osdmode? "Basic" : "GFX", MENUHIGHLIGHT(io), 0);
                     if (OSD_GetTextMode() != osdmode)
                         OSD_SetTextMode(osdmode);
                     break;
@@ -3473,9 +3473,9 @@ cheat_for_port_credits:
             menutext(c+168,50+62+16+16,MENUHIGHLIGHT(3),0,ud.detail?"OFF":"ON");
             modval(0,1,(int32_t *)&ud.detail,1,probey==3);
             menutext(c,50+62+16+16+16,MENUHIGHLIGHT(4),PHX(-6),"AMBIENT LIGHT");
-            _bar(0,c+185,50+62+16+16+16,&i,128,x==4,MENUHIGHLIGHT(4),g_netServer || numplayers>1,128,4096);
+            _bar(0,c+175,50+62+16+16+16,&i,128,x==4,MENUHIGHLIGHT(4),g_netServer || numplayers>1,128,4096);
             Bsprintf(tempbuf,"%.2f",r_ambientlight);
-            mgametextpal(c+185+9,50+62+16+16+16+4, tempbuf, MENUHIGHLIGHT(4), 0);
+            mgametextpal(c+175+9,50+62+16+16+16+4, tempbuf, MENUHIGHLIGHT(4), 0);
 
             if (i != j)
             {
@@ -4010,14 +4010,14 @@ cheat_for_port_credits:
         case 4:
         case 5:
         case 6:
-            mgametext(160,144+9+9,"DIGITAL AXES ARE NOT FOR MOUSE LOOK",0,2+8+16);
-            mgametext(160,144+9+9+9,"OR FOR AIMING UP AND DOWN",0,2+8+16);
+            mgametext(160,144+9+9,"DIGITAL AXES ARE NOT FOR MOUSE",0,2+8+16);
+            mgametext(160,144+9+9+9,"LOOK OR FOR AIMING UP AND DOWN",0,2+8+16);
             break;
         }
 
         menutext(c,46,MENUHIGHLIGHT(0),0,"X-AXIS SCALE");
         l = (ud.config.MouseAnalogueScale[0]+262144) >> 13;
-        bar(c+160+40,46,&l,1,x==0,MENUHIGHLIGHT(0),0);
+        bar(c+135+40,46,&l,1,x==0,MENUHIGHLIGHT(0),0);
         l = (l<<13)-262144;
         if (l != ud.config.MouseAnalogueScale[0])
         {
@@ -4025,11 +4025,11 @@ cheat_for_port_credits:
             ud.config.MouseAnalogueScale[0] = l;
         }
         Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
-        mgametext(c+160-16,46-8,tempbuf,MENUHIGHLIGHT(0),2+8+16);
+        mgametext(c+140-16,46-8,tempbuf,MENUHIGHLIGHT(0),2+8+16);
 
         menutext(c,46+16,MENUHIGHLIGHT(1),0,"Y-AXIS SCALE");
         l = (ud.config.MouseAnalogueScale[1]+262144) >> 13;
-        bar(c+160+40,46+16,&l,1,x==1,MENUHIGHLIGHT(1),0);
+        bar(c+135+40,46+16,&l,1,x==1,MENUHIGHLIGHT(1),0);
         l = (l<<13)-262144;
         if (l != ud.config.MouseAnalogueScale[1])
         {
@@ -4037,11 +4037,11 @@ cheat_for_port_credits:
             ud.config.MouseAnalogueScale[1] = l;
         }
         Bsprintf(tempbuf,"%s%.2f",l>=0?" ":"",(float)l/65536.0);
-        mgametext(c+160-16,46+16-8,tempbuf,MENUHIGHLIGHT(1),2+8+16);
+        mgametext(c+140-16,46+16-8,tempbuf,MENUHIGHLIGHT(1),2+8+16);
 
         menutext(c,46+16+16,MENUHIGHLIGHT(2),0,"DEAD ZONE");
         l = ud.config.MouseDeadZone>>1;
-        bar(c+160+40,46+16+16,&l,2,x==2,MENUHIGHLIGHT(2),0);
+        bar(c+135+40,46+16+16,&l,2,x==2,MENUHIGHLIGHT(2),0);
         ud.config.MouseDeadZone = l<<1;
         rotatesprite(320<<15,94<<16,65536L,0,MENUBAR,16,0,10,0,0,xdim-1,ydim-1);
         menutext(320>>1,43+16+16+16+8,0,0,"DIGITAL AXES SETUP");
@@ -4055,7 +4055,7 @@ cheat_for_port_credits:
         else if (ud.config.MouseDeadZone < 128)
             Bsprintf(tempbuf,"HIGH");
 
-        mgametext(c+160-16,46+16+16-8,tempbuf,MENUHIGHLIGHT(2),2+8+16);
+        mgametext(c+140-16,46+16+16-8,tempbuf,MENUHIGHLIGHT(2),2+8+16);
 
 
         mgametextpal(c+10,92+16,"UP:",MENUHIGHLIGHT(3),10);
