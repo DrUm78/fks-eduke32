@@ -41,6 +41,8 @@ void ReadSaveGameHeaders(void)
 
     for (i=0; i<10; i++)
     {
+        int32_t oldver=0;
+
         fn[4] = i+'0';
         if ((fil = kopen4loadfrommod(fn,0)) == -1) continue;
         if (kdfread(&j,sizeof(int32_t),1,fil) != 1)
@@ -60,9 +62,11 @@ void ReadSaveGameHeaders(void)
         }
         if (dummy != BYTEVERSION)
         {
-            kclose(fil);
-            continue;
+            oldver = 1;
+//            kclose(fil);
+//            continue;
         }
+
         if (kdfread(&dummy,sizeof(dummy),1,fil) != 1)
         {
             kclose(fil);
@@ -71,14 +75,26 @@ void ReadSaveGameHeaders(void)
         if (kdfread(&ud.savegame[i][0],21,1,fil) != 1)
         {
             ud.savegame[i][0] = 0;
+
+            ud.savegame[i][20] = 0;
+            ud.savegame[i][21] = 0;
         }
         else ud.savegame[i][19] = 0;
+
+        if (oldver)
+        {
+//            Bmemset(ud.savegame[i], 0, 20);
+            ud.savegame[i][0] = 0;
+
+            ud.savegame[i][20] = 32;
+            ud.savegame[i][21] = 0;
+        }
 
         kclose(fil);
     }
 }
 
-int32_t G_LoadSaveHeader(char spot,struct savehead *saveh)
+int32_t G_LoadSaveHeader(char spot,struct savehead_ *saveh)
 {
     char fn[13];
     int32_t fil;
@@ -103,6 +119,8 @@ int32_t G_LoadSaveHeader(char spot,struct savehead *saveh)
             kclose(fil);
             return 1;
         }*/
+
+    saveh->byteversion = bv;
 
     if (kdfread(&saveh->numplr,sizeof(int32_t),1,fil) != 1) goto corrupt;
 
@@ -605,10 +623,8 @@ int32_t G_LoadPlayer(int32_t spot)
     g_showShareware = 0;
     everyothertime = 0;
 
-//    clearbufbyte(playerquitflag,MAXPLAYERS,0x01010101);
-
     for (i=0; i<MAXPLAYERS; i++)
-        clearbufbyte(&g_player[i].playerquitflag,1,0x01010101);
+        g_player[i].playerquitflag = 1;
 
     Net_ResetPrediction();
 
@@ -1085,11 +1101,11 @@ static int32_t readspecdata(const dataspec_t *spec, int32_t fil, uint8_t **dumpv
             j=kread(fil, cmpstrbuf, i);
             if (j!=i || Bmemcmp(sp->ptr, cmpstrbuf, i))
             {
-                OSD_Printf("rds: spec=%p, sp=%p ", spec, sp);
+                OSD_Printf("rsd: spec=%p, sp=%p ", spec, sp);
                 if (j!=i)
-                    OSD_Printf("kread returned %d, expected %d.\n", j, i);
+                    OSD_Printf("     kread returned %d, expected %d.\n", j, i);
                 else
-                    OSD_Printf("sp->ptr and cmpstrbuf not identical!\n");
+                    OSD_Printf("     sp->ptr and cmpstrbuf not identical!\n");
 //                *(int32_t *)0 = 1;
                 return -1;
             }
@@ -1115,13 +1131,13 @@ static int32_t readspecdata(const dataspec_t *spec, int32_t fil, uint8_t **dumpv
             }
             if (i!=j)
             {
-                OSD_Printf("rsd: spec=%p, sp=%p, mem=%p ", spec, sp, mem);
-                OSD_Printf("rsd: %s: read %d, expected %d!\n",
+                OSD_Printf("rsd: spec=%p, sp=%p, mem=%p\n", spec, sp, mem);
+                OSD_Printf("     %s: read %d, expected %d!\n",
                            ((sp->flags&DS_CNTMASK)==0 && sp->size *cnt<=(int32_t)savegame_comprthres)?
                            "UNCOMP":"COMPR", i, j);
 
                 if (i==-1)
-                    perror("read");
+                    OSD_Printf("     read: %s\n", strerror(errno));
 //            *(int32_t *)0 = 1;
                 return -1;
             }
@@ -1646,7 +1662,7 @@ static int32_t doallocsnap(int32_t allocinit)
         svinitsnap = Bmalloc(svsnapsiz);
     svdiffsiz = svsnapsiz;  // theoretically it's less than could be needed in the worst case, but practically it's overkill
     svdiff = Bmalloc(svdiffsiz);
-    if (svsnapshot==NULL || (allocinit && svinitsnap==0) || svdiff==NULL)
+    if (svsnapshot==NULL || (allocinit && svinitsnap==NULL) || svdiff==NULL)
     {
         sv_freemem();
         return 1;
@@ -2177,11 +2193,12 @@ static int32_t doloadplayer2(int32_t spot, int32_t fil, uint8_t **memptr)
     if (Gv_ReadSave(fil, 1)) return -7;
     sv_makevarspec();
 
-    for (i=1; svgm_vars[i].flags!=DS_END; i++)
-    {
-        Bmemcpy(mem, svgm_vars[i].ptr, svgm_vars[i].size*svgm_vars[i].cnt);  // careful! works because there are no DS_DYNAMIC's!
-        mem += svgm_vars[i].size*svgm_vars[i].cnt;
-    }
+    if (mem)
+        for (i=1; svgm_vars[i].flags!=DS_END; i++)
+        {
+            Bmemcpy(mem, svgm_vars[i].ptr, svgm_vars[i].size*svgm_vars[i].cnt);  // careful! works because there are no DS_DYNAMIC's!
+            mem += svgm_vars[i].size*svgm_vars[i].cnt;
+        }
     PRINTSIZE(vars);
 
     if (memptr)
@@ -2300,9 +2317,9 @@ static void postloadplayer1()
     //6
     g_showShareware = 0;
 //    everyothertime = 0;
-//    clearbufbyte(playerquitflag,MAXPLAYERS,0x01010101);
+
     for (i=0; i<MAXPLAYERS; i++)
-        clearbufbyte(&g_player[i].playerquitflag,1,0x01010101);
+        g_player[i].playerquitflag = 1;
 }
 
 static void postloadplayer2()
