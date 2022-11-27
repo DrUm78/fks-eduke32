@@ -105,13 +105,9 @@ CXX   ?= $(CROSS_COMPILE)g++
 #AS=nasm
 #RC=windres
 #AR=ar
+#RANLIB=ranlib
 RANLIB ?= $(CROSS_COMPILE)ranlib
 ARCH=-fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-pointer -frename-registers -pipe -g0 -ffast-math
-#CC=gcc
-#CXX=g++
-#RC=windres
-#AR=ar
-#RANLIB=ranlib
 
 OURCFLAGS=$(debug) -W -Wall -Wimplicit -w \
 	-Wno-char-subscripts -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS \
