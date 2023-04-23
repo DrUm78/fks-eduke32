@@ -3487,7 +3487,7 @@ cheat_for_port_credits:
         menutext(c+16,50+16+16+22,MENUHIGHLIGHT(3),changesmade==0,"APPLY CHANGES");
 */
 
-        menutext(c,50+62+16,MENUHIGHLIGHT(2),PHX(-6),"COLOR CORRECTION");
+        menutext(c,50+16+16+16,MENUHIGHLIGHT(2),PHX(-6),"COLOR CORRECTION");
         /*        {
                     short ss = ud.brightness;
                     bar(c+171,50+62+16,&ss,8,x==4,MENUHIGHLIGHT(4),PHX(-6));
@@ -3502,13 +3502,13 @@ cheat_for_port_credits:
         {
             int32_t i = (int32_t)(r_ambientlight*1024.f);
             int32_t j = i;
-            menutext(c,50+62+16+16,MENUHIGHLIGHT(3),0,"PIXEL DOUBLING");
-            menutext(c+168,50+62+16+16,MENUHIGHLIGHT(3),0,ud.detail?"OFF":"ON");
+            menutext(c,50+16+16+16+16,MENUHIGHLIGHT(3),0,"PIXEL DOUBLING");
+            menutext(c+168,50+16+16+16+16,MENUHIGHLIGHT(3),0,ud.detail?"OFF":"ON");
             modval(0,1,(int32_t *)&ud.detail,1,probey==3);
-            menutext(c,50+62+16+16+16,MENUHIGHLIGHT(4),PHX(-6),"AMBIENT LIGHT");
-            _bar(0,c+175,50+62+16+16+16,&i,128,x==4,MENUHIGHLIGHT(4),g_netServer || numplayers>1,128,4096);
+            menutext(c,50+16+16+16+16+16,MENUHIGHLIGHT(4),PHX(-6),"AMBIENT LIGHT");
+            _bar(0,c+175,50+16+16+16+16+16,&i,128,x==4,MENUHIGHLIGHT(4),g_netServer || numplayers>1,128,4096);
             Bsprintf(tempbuf,"%.2f",r_ambientlight);
-            mgametextpal(c+175+9,50+62+16+16+16+4, tempbuf, MENUHIGHLIGHT(4), 0);
+            mgametextpal(c+175+9,50+16+16+16+16+16+4, tempbuf, MENUHIGHLIGHT(4), 0);
 
             if (i != j)
             {
