@@ -2147,7 +2147,7 @@ static int32_t buildkeytranslationtable(void)
 
 	// TODO: Figure out why this #if defined isn't working
 #if 1 //defined(FUNKEYS)
-	initprintf("Loading Funkey-S key translation table...\n");
+	initprintf("Loading FunKey S key translation table...\n");
 	// We leave some of the
 	MAP(SDLK_u, sc_UpArrow);
 	MAP(SDLK_d, sc_DownArrow);
