@@ -992,16 +992,33 @@ static int32_t osdcmd_bind(const osdfuncparm_t *parm)
 
     KeyBindings[ConsoleKeys[i].id].key=ConsoleKeys[i].name;
 
-    // populate the keyboard config menu based on the bind
-    if (!Bstrncasecmp(tempbuf, "gamefunc_", 9))
     {
-        j = CONFIG_FunctionNameToNum(tempbuf+9);
+        char *cp = tempbuf;
 
-        if (j != -1)
+        // Populate the keyboard config menu based on the bind.
+        // Take care of processing one-to-many bindings properly, too.
+        while ((cp = Bstrstr(cp, "gamefunc_")))
         {
-            ud.config.KeyboardKeys[j][1] = ud.config.KeyboardKeys[j][0];
-            ud.config.KeyboardKeys[j][0] = ConsoleKeys[i].id;
-            CONTROL_MapKey(j, ConsoleKeys[i].id, ud.config.KeyboardKeys[j][0]);
+            char *semi;
+
+            cp += 9;  // skip the "gamefunc_"
+
+            semi = Bstrchr(cp, ';');
+            if (semi)
+                *semi = 0;
+
+            j = CONFIG_FunctionNameToNum(cp);
+
+            if (semi)
+                cp = semi+1;
+
+            if (j != -1)
+            {
+                ud.config.KeyboardKeys[j][1] = ud.config.KeyboardKeys[j][0];
+                ud.config.KeyboardKeys[j][0] = ConsoleKeys[i].id;
+
+//            CONTROL_MapKey(j, ConsoleKeys[i].id, ud.config.KeyboardKeys[j][0]);
+            }
         }
     }
 
@@ -1028,7 +1045,7 @@ static int32_t osdcmd_unbindall(const osdfuncparm_t *parm)
     for (i=0; i<NUMGAMEFUNCTIONS; i++)
     {
         ud.config.KeyboardKeys[i][0] = ud.config.KeyboardKeys[i][1] = 0xff;
-        CONTROL_MapKey(i, ud.config.KeyboardKeys[i][0], ud.config.KeyboardKeys[i][1]);
+//        CONTROL_MapKey(i, ud.config.KeyboardKeys[i][0], ud.config.KeyboardKeys[i][1]);
     }
 
     if (!OSD_ParsingScript())
