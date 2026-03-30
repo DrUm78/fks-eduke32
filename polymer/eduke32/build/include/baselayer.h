@@ -153,7 +153,7 @@ int32_t setpalette(int32_t start, int32_t num);
 int32_t setgamma(void);
 extern double vid_gamma, vid_contrast, vid_brightness;
 
-#define DEFAULT_GAMMA 1.0
+#define DEFAULT_GAMMA 1.5
 #define DEFAULT_CONTRAST 1.0
 #define DEFAULT_BRIGHTNESS 0.0
 
