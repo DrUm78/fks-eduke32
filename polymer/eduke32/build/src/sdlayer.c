@@ -4,7 +4,6 @@
 //
 // Use SDL 1.2 or 1.3 from http://www.libsdl.org
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <signal.h>
@@ -186,6 +185,20 @@ int32_t main(int32_t argc, char *argv[])
     _buildargc = argc;
     _buildargv = (const char**)argv;
 
+    // pipe standard outputs to files
+    if ((argp = Bgetenv("BUILD_LOGSTDOUT")) != NULL)
+        if (!Bstrcasecmp(argp, "TRUE"))
+        {
+            fp = freopen("stdout.txt", "w", stdout);
+            if (!fp)
+            {
+                fp = fopen("stdout.txt", "w");
+            }
+            if (fp) setvbuf(fp, 0, _IONBF, 0);
+            *stdout = *fp;
+            *stderr = *fp;
+        }
+
 #if defined(USE_OPENGL) && defined(POLYMOST)
     if ((argp = Bgetenv("BUILD_NOFOG")) != NULL)
         nofog = Batol(argp);
@@ -200,6 +213,17 @@ int32_t main(int32_t argc, char *argv[])
 #endif
     return r;
 }
+
+#if defined(USE_OPENGL) && defined(POLYMOST)
+void setvsync(int32_t sync)
+{
+    if (vsync == sync) return;
+    vsync = sync;
+    resetvideomode();
+    if (setgamemode(fullscreen,xdim,ydim,bpp))
+        OSD_Printf("restartvid: Reset failed...\n");
+}
+#endif
 
 static void attach_debugger_here(void){}
 
@@ -794,11 +818,34 @@ static int32_t sortmodes(const struct validmode_t *a, const struct validmode_t *
 static char modeschecked=0;
 void getvalidmodes(void)
 {
-
+    static int32_t cdepths[] =
+    {
+        8,
+#ifdef USE_OPENGL
+        16,24,32,
+#endif
+        0
+    };
+    static int32_t defaultres[][2] =
+    {
+// Only 320x240 is valid for Dingoo A320
+//        {1280,1024}
+//        ,{1280,960},{1152,864},{1024,768},{800,600},{640,480},
+//        {640,400},{512,384},{480,360},{400,300},{320,240},{320,200},{0,0}
+	{320,240},{0,0}
+    };
+    SDL_Rect **modes;
+#if (SDL_MAJOR_VERSION > 1 || SDL_MINOR_VERSION > 2)
+    SDL_PixelFormat pf = { NULL, 8, 1, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
+#else
+    SDL_PixelFormat pf = { NULL, 8, 1, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0 };
+#endif
+    int32_t i, j, maxx=0, maxy=0;
 
     if (modeschecked) return;
 
     validmodecnt=0;
+//    initprintf("Detecting video modes:\n");
 
 #define ADDMODE(x,y,c,f) if (validmodecnt<MAXVALIDMODES) { \
     int32_t mn; \
@@ -811,11 +858,75 @@ void getvalidmodes(void)
         validmode[validmodecnt].bpp=c; \
         validmode[validmodecnt].fs=f; \
         validmodecnt++; \
-        initprintf("  - %dx%d %d-bit %s\n", x, y, c, (f&1)?"fullscreen":"windowed"); \
+        /*initprintf("  - %dx%d %d-bit %s\n", x, y, c, (f&1)?"fullscreen":"windowed");*/ \
     } \
 }
 
-    ADDMODE(320, 240, 32, 0);
+#define CHECK(w,h) if ((w < maxx) && (h < maxy))
+
+    // do fullscreen modes first
+    for (j=0; cdepths[j]; j++)
+    {
+#ifdef USE_OPENGL
+        if (nogl && cdepths[j] > 8) continue;
+#endif
+        pf.BitsPerPixel = cdepths[j];
+        pf.BytesPerPixel = cdepths[j] >> 3;
+
+        modes = SDL_ListModes(&pf, SURFACE_FLAGS
+#if (SDL_MAJOR_VERSION == 1 && SDL_MINOR_VERSION < 3)
+                              | SDL_FULLSCREEN // not implemented/working in SDL 1.3 SDL_compat.c
+#endif
+                             );
+
+        if (modes == (SDL_Rect **)0)
+        {
+            if (cdepths[j] > 8) cdepths[j] = -1;
+            continue;
+        }
+
+        if (modes == (SDL_Rect **)-1)
+        {
+            for (i=0; defaultres[i][0]; i++)
+                ADDMODE(defaultres[i][0],defaultres[i][1],cdepths[j],1)
+            }
+        else
+        {
+            for (i=0; modes[i]; i++)
+            {
+                if ((modes[i]->w > MAXXDIM) || (modes[i]->h > MAXYDIM)) continue;
+
+                ADDMODE(modes[i]->w, modes[i]->h, cdepths[j], 1)
+
+                if ((modes[i]->w > maxx) && (modes[i]->h > maxy))
+                {
+                    maxx = modes[i]->w;
+                    maxy = modes[i]->h;
+                }
+            }
+        }
+    }
+
+    if (maxx == 0 && maxy == 0)
+    {
+        initprintf("No fullscreen modes available!\n");
+        maxx = MAXXDIM; maxy = MAXYDIM;
+    }
+
+    // add windowed modes next
+    for (j=0; cdepths[j]; j++)
+    {
+#ifdef USE_OPENGL
+        if (nogl && cdepths[j] > 8) continue;
+#endif
+        if (cdepths[j] < 0) continue;
+        for (i=0; defaultres[i][0]; i++)
+            CHECK(defaultres[i][0],defaultres[i][1])
+            ADDMODE(defaultres[i][0],defaultres[i][1],cdepths[j],0)
+        }
+
+#undef CHECK
+#undef ADDMODE
 
     qsort((void*)validmode, validmodecnt, sizeof(struct validmode_t), (int32_t(*)(const void*,const void*))sortmodes);
 
@@ -913,6 +1024,10 @@ int32_t setvideomode(int32_t x, int32_t y, int32_t c, int32_t fs)
 
     if (lockcount) while (lockcount) enddrawing();
 
+#if defined(USE_OPENGL)
+    if (bpp > 8 && sdl_surface) polymost_glreset();
+#endif
+
     // restore gamma before we change video modes if it was changed
     if (sdl_surface && gammabrightness)
     {
@@ -920,10 +1035,94 @@ int32_t setvideomode(int32_t x, int32_t y, int32_t c, int32_t fs)
         gammabrightness = 0;	// redetect on next mode switch
     }
 
+#if defined(USE_OPENGL)
+    if (c > 8)
     {
+        int32_t i, j, multisamplecheck = (glmultisample > 0);
+        struct
+        {
+            SDL_GLattr attr;
+            int32_t value;
+        }
+        attributes[] =
+        {
+#if 0
+            { SDL_GL_RED_SIZE, 8 },
+            { SDL_GL_GREEN_SIZE, 8 },
+            { SDL_GL_BLUE_SIZE, 8 },
+            { SDL_GL_ALPHA_SIZE, 8 },
+            { SDL_GL_BUFFER_SIZE, c },
+            { SDL_GL_STENCIL_SIZE, 0 },
+            { SDL_GL_ACCUM_RED_SIZE, 0 },
+            { SDL_GL_ACCUM_GREEN_SIZE, 0 },
+            { SDL_GL_ACCUM_BLUE_SIZE, 0 },
+            { SDL_GL_ACCUM_ALPHA_SIZE, 0 },
+            { SDL_GL_DEPTH_SIZE, 24 },
+#endif
+            { SDL_GL_DOUBLEBUFFER, 1 },
+            { SDL_GL_MULTISAMPLEBUFFERS, glmultisample > 0 },
+            { SDL_GL_MULTISAMPLESAMPLES, glmultisample },
+            { SDL_GL_STENCIL_SIZE, 1 },
+#if (SDL_MAJOR_VERSION == 1 && SDL_MINOR_VERSION < 3)
+            { SDL_GL_SWAP_CONTROL, vsync },
+#endif
+        };
+
+        if (nogl) return -1;
+
         initprintf("Setting video mode %dx%d (%d-bpp %s)\n",
                    x,y,c, ((fs&1) ? "fullscreen" : "windowed"));
-        sdl_surface = SDL_SetVideoMode(x, y, c, SDL_HWSURFACE | SDL_DOUBLEBUF);
+        do
+        {
+            for (i=0; i < (int32_t)(sizeof(attributes)/sizeof(attributes[0])); i++)
+            {
+                j = attributes[i].value;
+                if (!multisamplecheck &&
+                        (attributes[i].attr == SDL_GL_MULTISAMPLEBUFFERS ||
+                         attributes[i].attr == SDL_GL_MULTISAMPLESAMPLES)
+                   )
+                {
+                    j = 0;
+                }
+                SDL_GL_SetAttribute(attributes[i].attr, j);
+            }
+
+            /* HACK: changing SDL GL attribs only works before surface creation,
+               so we have to create a new surface in a different format first
+               to force the surface we WANT to be recreated instead of reused. */
+#if (SDL_MAJOR_VERSION == 1 && SDL_MINOR_VERSION < 3)
+            if (vsync != ovsync)
+            {
+                if (sdl_surface)
+                {
+                    SDL_FreeSurface(sdl_surface);
+                    sdl_surface = SDL_SetVideoMode(1, 1, 8, SDL_NOFRAME | SURFACE_FLAGS | ((fs&1)?SDL_FULLSCREEN:0));
+                    SDL_FreeSurface(sdl_surface);
+                }
+                ovsync = vsync;
+            }
+#endif
+            sdl_surface = SDL_SetVideoMode(x, y, c, SDL_OPENGL | ((fs&1)?SDL_FULLSCREEN:0));
+            if (!sdl_surface)
+            {
+                if (multisamplecheck)
+                {
+                    initprintf("Multisample mode not possible. Retrying without multisampling.\n");
+                    glmultisample = 0;
+                    continue;
+                }
+                initprintf("Unable to set video mode!\n");
+                return -1;
+            }
+        }
+        while (multisamplecheck--);
+    }
+    else
+#endif
+    {
+        initprintf("Setting video mode %dx%d (%d-bpp %s)\n",
+                   x,y,16, ((fs&1) ? "fullscreen" : "windowed"));
+        sdl_surface = SDL_SetVideoMode(x, y, 8, SDL_HWSURFACE | SDL_DOUBLEBUF | ((fs&1)?SDL_FULLSCREEN:0));
         if (!sdl_surface)
         {
             initprintf("Unable to set video mode!\n");
