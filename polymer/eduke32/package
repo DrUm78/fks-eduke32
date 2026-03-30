@@ -1,0 +1,15 @@
+#!/bin/bash
+
+make veryclean
+make -j16
+
+if  [[ ! -f eduke32 ]] ; then
+    echo 'Build failed!'
+    exit
+fi
+
+cp -f eduke32 ./opk
+rm -f *.opk
+mksquashfs opk/* eduke32_v1.3_gcw0.opk
+md5sum eduke32
+rm -f opk/eduke32

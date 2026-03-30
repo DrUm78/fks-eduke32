@@ -94,12 +94,12 @@ ifneq (0,$(DEBUGANYWAY))
     debug+=-ggdb
 endif
 
-CC=mipsel-gcw0-linux-uclibc-gcc
-CXX=mipsel-gcw0-linux-uclibc-g++
+CC=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-gcc
+CXX=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-g++
 #AS=nasm
-RC=mipsel-gcw0-linux-uclibc-windres
-AR=mipsel-gcw0-linux-uclibc-ar
-RANLIB=mipsel-gcw0-linux-uclibc-ranlib
+RC=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-windres
+AR=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-ar
+RANLIB=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-ranlib
 ARCH=-fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-pointer -frename-registers -pipe -G 0 -ffast-math
 #CC=gcc
 #CXX=g++

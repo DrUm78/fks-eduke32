@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=EDuke32
+Comment=Modern Duke Nukem 3D engine port
+Exec=eduke32
+Icon=eduke32
+Categories=games

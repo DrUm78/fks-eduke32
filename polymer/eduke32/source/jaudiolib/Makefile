@@ -1,4 +1,4 @@
-CC=mipsel-gcw0-linux-uclibc-gcc
+CC=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-gcc
 #CC=gcc
 OBJ=obj
 OBJNAME?=libjfaudiolib.a

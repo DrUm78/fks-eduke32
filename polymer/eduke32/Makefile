@@ -71,19 +71,19 @@ JAUDIOLIB=libjfaudiolib.a
 ENETDIR=$(SRC)/enet
 ENETLIB=libenet.a
 
-CC=mipsel-gcw0-linux-uclibc-gcc
-CXX=mipsel-gcw0-linux-uclibc-g++
+CC=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-gcc
+CXX=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-gcw0-linux-uclibc-g++
 #AS=nasm
-RC=mipsel-gcw0-linux-uclibc-windres
-STRIP=mipsel-gcw0-linux-uclibc-strip
+RC=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-windres
+STRIP=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-strip
 ARCH=-fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-pointer -frename-registers -pipe -G 0 -ffast-math
 #CC=gcc
 #CXX=g++
 #RC=windres
 #STRIP=strip
 
-SDLCONFIG=/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
-SDL_FRAMEWORK=/opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include/
+SDLCONFIG=/opt/gcw0-toolchain-gcc5.5.0/usr/mipsel-rg350-linux-uclibc/sysroot/usr/bin/sdl-config
+SDL_FRAMEWORK=/opt/gcw0-toolchain-gcc5.5.0/usr/mipsel-rg350-linux-uclibc/sysroot/usr/include/
 
 OURCFLAGS=$(debug) -W -Wall -Wimplicit \
     -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS \
@@ -333,7 +333,7 @@ $(RSRC)/editor_banner.c: $(RSRC)/build.bmp
 # PHONIES	
 
 clean:
-	-rm -f $(OBJ)/* eduke32$(EXESUFFIX) mapster32$(EXESUFFIX) core* duke3d_w32$(EXESUFFIX) && $(MAKE) -C $(JAUDIOLIBDIR) clean && $(MAKE) -C $(ENETDIR) clean
+	-rm -f $(OBJ)/*.o eduke32$(EXESUFFIX) mapster32$(EXESUFFIX) core* duke3d_w32$(EXESUFFIX) && $(MAKE) -C $(JAUDIOLIBDIR) clean && $(MAKE) -C $(ENETDIR) clean
 
 veryclean: clean
-	-rm -f $(EOBJ)/* $(RSRC)/*banner*
+	-rm -f $(EOBJ)/*.o $(EOBJ)/*.a $(RSRC)/*banner*
