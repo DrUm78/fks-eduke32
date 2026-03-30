@@ -156,13 +156,27 @@ static playbackstatus MV_GetNextVorbisBlock
    do {
        bytes = ov_read(&vd->vf, vd->block + bytesread, BLOCKSIZE - bytesread, 0, 2, 1, &bitstream);
        //fprintf(stderr, "ov_read = %d\n", bytes);
-       if (bytes > 0) { bytesread += bytes; continue; }
+       if (bytes > 0) {
+           bytesread += bytes;
+           if ((ogg_int64_t)(intptr_t)voice->LoopEnd > 0
+                && ov_pcm_tell(&vd->vf) >= (ogg_int64_t)(intptr_t)voice->LoopEnd) {
+                   err = ov_pcm_seek(&vd->vf,(ogg_int64_t)(intptr_t)voice->LoopStart);
+                   if (err != 0) {
+                       MV_Printf("MV_GetNextVorbisBlock ov_pcm_seek: LOOP_START %l, LOOP_END %l, err %d\n",
+                           (ogg_int64_t)(intptr_t)voice->LoopStart, (ogg_int64_t)(intptr_t)voice->LoopEnd, err);
+                   } else {
+                       continue;
+                   }
+               }
+            continue;
+       }
        else if (bytes == OV_HOLE) continue;
        else if (bytes == 0) {
-           if (voice->LoopStart) {
-               err = ov_pcm_seek_page(&vd->vf, 0);
+           if (voice->LoopSize > 0) {
+               err = ov_pcm_seek(&vd->vf,(ogg_int64_t)(intptr_t)voice->LoopStart);
                if (err != 0) {
-                   MV_Printf("MV_GetNextVorbisBlock ov_pcm_seek_page_lap: err %d\n", err);
+                   MV_Printf("MV_GetNextVorbisBlock ov_pcm_seek: LOOP_START %l, err %d\n",
+                       (ogg_int64_t)(intptr_t)voice->LoopStart, err);
                } else {
                    continue;
                }
@@ -317,8 +331,6 @@ int32_t MV_PlayLoopedVorbis
    int32_t          status;
    vorbis_data * vd = 0;
    vorbis_info * vi = 0;
- 
-   UNREFERENCED_PARAMETER(loopend);
 
    if ( !MV_Installed )
    {
@@ -385,9 +397,77 @@ int32_t MV_PlayLoopedVorbis
    voice->prev        = NULL;
    voice->priority    = priority;
    voice->callbackval = callbackval;
-   voice->LoopStart   = (char *) (loopstart >= 0 ? TRUE : FALSE);
-   voice->LoopEnd     = 0;
-   voice->LoopSize    = 0;
+
+   voice->LoopStart   = (char *) (intptr_t)(loopstart >= 0 ? loopstart : 0);
+   voice->LoopEnd     = (char *) (intptr_t)(loopstart >= 0 && loopend > 0 ? loopend : 0);
+   voice->LoopSize    = (loopstart >= 0 ? 1 : 0);
+
+    // load loop tags from metadata
+    if (loopstart < 1)
+    {
+        vorbis_comment * vc = ov_comment(&vd->vf, 0);
+        if (vc != NULL)
+        {
+            int loopTagCount;
+
+            static const char *loopStartTags[] = {
+                "LOOP_START",
+                "LOOPSTART"
+            };
+
+            char *vc_loopstart = NULL;
+
+            for (loopTagCount = 0; loopTagCount < 2 && vc_loopstart == NULL; ++loopTagCount)
+                vc_loopstart = vorbis_comment_query(vc, loopStartTags[loopTagCount], 0);
+
+            if (vc_loopstart != NULL)
+            {
+                ogg_int64_t ov_loopstart = atol(vc_loopstart);
+                if (ov_loopstart >= 0) // a loop starting at 0 is valid
+                {
+                    static const char *loopEndTags[] = {
+                        "LOOP_END",
+                        "LOOPEND"
+                    };
+
+                    char *vc_loopend = NULL;
+
+                    voice->LoopStart = (char *) (intptr_t) ov_loopstart;
+                    voice->LoopSize = 1;
+
+                    for (loopTagCount = 0; loopTagCount < 2 && vc_loopend == NULL; ++loopTagCount)
+                        vc_loopend = vorbis_comment_query(vc, loopEndTags[loopTagCount], 0);
+
+                    if (vc_loopend != NULL)
+                    {
+                        ogg_int64_t ov_loopend = atol(vc_loopend);
+                        if (ov_loopend > 0) // a loop ending at 0 is invalid
+                            voice->LoopEnd = (char *) (intptr_t) ov_loopend;
+                    }
+                    else
+                    {
+                        static const char *loopLengthTags[] = {
+                            "LOOP_LENGTH",
+                            "LOOPLENGTH"
+                        };
+
+                        char *vc_looplength = NULL;
+
+                        for (loopTagCount = 0; loopTagCount < 2 && vc_looplength == NULL; ++loopTagCount)
+                            vc_looplength = vorbis_comment_query(vc, loopLengthTags[loopTagCount], 0);
+
+                        if (vc_looplength != NULL)
+                        {
+                            ogg_int64_t ov_looplength = atol(vc_looplength);
+                            if (ov_looplength > 0) // a loop of length 0 is invalid
+                                voice->LoopEnd = (char *) (intptr_t) (ov_looplength + ov_loopstart);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
    voice->Playing     = TRUE;
    voice->Paused      = FALSE;
    
