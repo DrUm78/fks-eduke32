@@ -3291,7 +3291,8 @@ ACTOR_STATIC void G_MoveTransports(void)
                 break;
 
             case STAT_PROJECTILE:
-                if (sectlotag != 0) goto JBOLT;
+                // comment out to make RPGs pass through water: (r1450 breaks this)
+//                if (sectlotag != 0) goto JBOLT;
             case STAT_ACTOR:
                 if ((sprite[j].picnum == SHARK) || (sprite[j].picnum == COMMANDER) || (sprite[j].picnum == OCTABRAIN)
                         || ((sprite[j].picnum >= GREENSLIME) && (sprite[j].picnum <= GREENSLIME+7)))
