@@ -1934,9 +1934,9 @@ static int32_t buildkeytranslationtable(void)
 #define MAP(x,y) keytranslation[x] = y
     MAP(SDLK_BACKSPACE,	0xe);
     MAP(SDLK_TAB,		0xf);
-    MAP(SDLK_RETURN,	0x1c);
+    MAP(SDLK_RETURN,	0x1);
     MAP(SDLK_PAUSE,		0x59);	// 0x1d + 0x45 + 0x9d + 0xc5
-    MAP(SDLK_ESCAPE,	0x1);
+    MAP(SDLK_ESCAPE,	0x1c);
     MAP(SDLK_SPACE,		0x39);
     MAP(SDLK_EXCLAIM,	0x2);	// '1'
     MAP(SDLK_QUOTEDBL,	0x28);	// '''
