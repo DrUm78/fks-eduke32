@@ -71,19 +71,19 @@ JAUDIOLIB=libjfaudiolib.a
 ENETDIR=$(SRC)/enet
 ENETLIB=libenet.a
 
-CC=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-gcc
-CXX=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-gcw0-linux-uclibc-g++
+CC=/opt/gcw0-toolchain-gcc11.1.0/bin/mipsel-gcw0-linux-uclibc-gcc
+CXX=/opt/gcw0-toolchain-gcc11.1.0/bin/mipsel-gcw0-linux-uclibc-g++
 #AS=nasm
-RC=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-windres
-STRIP=/opt/gcw0-toolchain-gcc5.5.0/bin/mipsel-rg350-linux-uclibc-strip
-ARCH=-fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-pointer -frename-registers -pipe -G 0 -ffast-math
+RC=/opt/gcw0-toolchain-gcc11.1.0/bin/mipsel-gcw0-linux-uclibc-windres
+STRIP=/opt/gcw0-toolchain-gcc11.1.0/bin/mipsel-gcw0-linux-uclibc-strip
+ARCH=-fstrength-reduce -fthread-jumps -fexpensive-optimizations -fomit-frame-pointer -frename-registers -pipe -G 0 -ffast-math -Wl,--allow-multiple-definition
 #CC=gcc
 #CXX=g++
 #RC=windres
 #STRIP=strip
 
-SDLCONFIG=/opt/gcw0-toolchain-gcc5.5.0/usr/mipsel-rg350-linux-uclibc/sysroot/usr/bin/sdl-config
-SDL_FRAMEWORK=/opt/gcw0-toolchain-gcc5.5.0/usr/mipsel-rg350-linux-uclibc/sysroot/usr/include/
+SDLCONFIG=/opt/gcw0-toolchain-gcc11.1.0/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin/sdl-config
+SDL_FRAMEWORK=/opt/gcw0-toolchain-gcc11.1.0/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include/
 
 OURCFLAGS=$(debug) -W -Wall -Wimplicit \
     -funsigned-char -fno-strict-aliasing -DNO_GCC_BUILTINS \
