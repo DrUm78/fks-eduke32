@@ -10,6 +10,6 @@ fi
 
 cp -f eduke32 ./opk
 rm -f *.opk
-mksquashfs opk/* eduke32_v1.3_gcw0.opk
+mksquashfs opk/* eduke32_gcw0.opk
 md5sum eduke32
 rm -f opk/eduke32
